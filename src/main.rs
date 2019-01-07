@@ -151,18 +151,22 @@ impl event::EventHandler for State {
         graphics::clear(ctx);
         graphics::set_background_color(ctx, graphics::BLACK);
 
+        let rect = [
+            graphics::Point2::new(0.0,0.0),
+            graphics::Point2::new(SCALE as f32,0.0),
+            graphics::Point2::new(SCALE as f32,SCALE as f32),
+            graphics::Point2::new(0.0,SCALE as f32),
+        ];
+        let mesh = graphics::Mesh::new_polygon(ctx, graphics::DrawMode::Fill, &rect)?;
+
         for y_pos in 0..ROWS {
             for x_pos in 0..COLS {
                 let fire_pixel = &self.fire_grid[y_pos][x_pos];
                 let color = &COLORS[fire_pixel.index];
+                let x =  (x_pos * SCALE) as f32;
+                let y =  ((ROWS - y_pos) * SCALE) as f32; // render upside down
                 graphics::set_color(ctx, color.into())?;
-                let rect = graphics::Rect {
-                    x: (x_pos * SCALE) as f32,
-                    y: ((ROWS - y_pos) * SCALE) as f32, // render upside down
-                    w: SCALE as f32,
-                    h: SCALE as f32,
-                };
-                graphics::rectangle(ctx, graphics::DrawMode::Fill, rect)?
+                graphics::draw(ctx, &mesh, graphics::Point2::new(x, y), 0.0)?
             }
         }
         graphics::present(ctx);
